@@ -1,0 +1,23 @@
+# ── Python deps for fine-tune RunPod container ──
+# torch / torchaudio / cuda đã có trong base image → KHÔNG cài lại
+
+# RunPod serverless SDK
+runpod
+
+# ASR training stack
+lhotse
+kaldialign
+sentencepiece
+
+# ONNX export & validation
+onnx
+onnxruntime-gpu
+
+# Audio processing
+librosa
+soundfile
+pydub
+
+# Misc
+requests
+tensorboard
