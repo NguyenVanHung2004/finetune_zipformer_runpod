@@ -17,7 +17,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # ── 2. Upgrade pip & build tools ────────────────────────────────
 RUN pip install --upgrade pip --quiet \
-    && pip install --no-cache-dir cmake ninja onnxsim
+    && pip install --no-cache-dir cmake ninja onnxsim \
+    && pip install --no-cache-dir torch==2.4.0 torchaudio==2.4.0 --index-url https://download.pytorch.org/whl/cu124
 
 # ── 3. Install k2  (must match: torch 2.4.0 + cuda 12.4 + py 3.11)
 #    Try two common manylinux tags; first success wins.
