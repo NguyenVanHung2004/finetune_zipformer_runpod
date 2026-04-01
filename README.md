@@ -94,7 +94,7 @@ Mỗi dòng là 1 JSON object:
 ---
 
 ## Deploy lên RunPod
-
+Đơn giản nhất là tạo serverless với chính Github repo trên RunPod, chỉ gần gán link github vào, đã có đủ config cần thiết cho Runpod. Phần bên dưới có thể bỏ qua.
 ### 1. Build & push Docker image
 
 ```bash
