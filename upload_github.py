@@ -67,12 +67,16 @@ def _delete_release_by_tag(repo: str, token: str, tag: str):
         print(f"   🗑️  Đã xóa release cũ (id={release_id})")
 
     # 2. Xóa git tag
+    # 204 = xóa thành công
+    # 422 = tag không tồn tại → OK
+    # 404 = không tìm thấy ref → OK (empty repo hoặc tag chưa tạo)
+    # 409 = Conflict (thường gặp với empty repo) → bỏ qua, GitHub tự dọn
     r2 = requests.delete(
         f"{GH_API}/repos/{repo}/git/refs/tags/{tag}",
         headers=_headers(token), timeout=15,
     )
-    if r2.status_code in (204, 422):   # 422 = tag không tồn tại → OK
-        print(f"   🗑️  Đã xóa git tag '{tag}'")
+    if r2.status_code in (204, 404, 409, 422):
+        print(f"   🗑️  Git tag '{tag}' đã xử lý (status={r2.status_code})")
     else:
         r2.raise_for_status()
 
