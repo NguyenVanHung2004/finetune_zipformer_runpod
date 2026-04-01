@@ -55,7 +55,7 @@ class FinetunePipeline:
 
     def __init__(
         self,
-        base_dir:    str = "/workspace/finetune_data",
+        base_dir:    str = "/runpod-volume/finetune_data",
         icefall_dir: str = "/icefall",
         num_epochs:  int = 3,
         adapter_dim: int = 8,
@@ -67,7 +67,7 @@ class FinetunePipeline:
         self.adapter_dim = adapter_dim
         self.base_lr     = base_lr
 
-        # Sub-directories
+        # Sub-directories (tất cả lưu trên Network Volume)
         self.audio_dir  = os.path.join(base_dir, "am_thanh")
         self.text_dir   = os.path.join(base_dir, "van_ban")
         self.model_dir  = os.path.join(base_dir, "model_vi")
@@ -326,6 +326,7 @@ class FinetunePipeline:
             "--enable-musan",         "False",
             "--num-buckets",          "1",
             "--bucketing-sampler",    "False",
+            "--keep-last-k",          "1",   # Chỉ giữ checkpoint cuối → tiết kiệm disk
             "--num-encoder-layers",   "2,2,3,4,3,2",
             "--downsampling-factor",  "1,2,4,8,4,2",
             "--feedforward-dim",      "512,768,1024,1536,1024,768",

@@ -65,11 +65,10 @@ def handler(job):
         jsonl_path = download_jsonl(jsonl_url)
         
         # 3. Khởi tạo và chạy pipeline
-        # Mặc định dùng /workspace là network volume của RunPod nếu có, 
-        # hoặc /tmp/finetune nếu không muốn dùng volume.
-        # Ở Serverless, /workspace thường mount vào Network Volume.
+        # Network Volume được mount tại /runpod-volume → dung lượng lớn, persistent.
+        # Checkpoints (~600MB/epoch), pretrained model (~600MB), audio đều lưu ở đây.
         pipeline = FinetunePipeline(
-            base_dir="/workspace/finetune_data",
+            base_dir="/runpod-volume/finetune_data",
             num_epochs=num_epochs,
             adapter_dim=adapter_dim,
             base_lr=base_lr
