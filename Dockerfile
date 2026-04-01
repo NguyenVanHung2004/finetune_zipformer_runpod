@@ -12,11 +12,12 @@ ENV HF_HOME=/workspace/hf_cache
 
 # ── 1. System packages ──────────────────────────────────────────
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        git git-lfs ffmpeg wget curl sox \
+        git git-lfs ffmpeg wget curl sox cmake build-essential pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
-# ── 2. Upgrade pip ──────────────────────────────────────────────
-RUN pip install --upgrade pip --quiet
+# ── 2. Upgrade pip & build tools ────────────────────────────────
+RUN pip install --upgrade pip --quiet \
+    && pip install --no-cache-dir cmake ninja onnxsim
 
 # ── 3. Install k2  (must match: torch 2.4.0 + cuda 12.4 + py 3.11)
 #    Try two common manylinux tags; first success wins.
