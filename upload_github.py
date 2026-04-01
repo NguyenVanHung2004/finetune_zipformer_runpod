@@ -50,8 +50,35 @@ def _ensure_repo_exists(repo: str, token: str):
     r.raise_for_status()
 
 
+def _delete_release_by_tag(repo: str, token: str, tag: str):
+    """Xóa release và tag git nếu đã tồn tại."""
+    # 1. Tìm release theo tag
+    r = requests.get(
+        f"{GH_API}/repos/{repo}/releases/tags/{tag}",
+        headers=_headers(token), timeout=15,
+    )
+    if r.status_code == 200:
+        release_id = r.json()["id"]
+        # Xóa release
+        requests.delete(
+            f"{GH_API}/repos/{repo}/releases/{release_id}",
+            headers=_headers(token), timeout=15,
+        ).raise_for_status()
+        print(f"   🗑️  Đã xóa release cũ (id={release_id})")
+
+    # 2. Xóa git tag
+    r2 = requests.delete(
+        f"{GH_API}/repos/{repo}/git/refs/tags/{tag}",
+        headers=_headers(token), timeout=15,
+    )
+    if r2.status_code in (204, 422):   # 422 = tag không tồn tại → OK
+        print(f"   🗑️  Đã xóa git tag '{tag}'")
+    else:
+        r2.raise_for_status()
+
+
 def _create_release(repo: str, token: str, tag: str, body: str) -> dict:
-    """Tạo GitHub Release và trả về response JSON."""
+    """Tạo GitHub Release. Nếu tag đã tồn tại → tự xóa rồi tạo lại."""
     url = f"{GH_API}/repos/{repo}/releases"
     payload = {
         "tag_name": tag,
@@ -62,10 +89,10 @@ def _create_release(repo: str, token: str, tag: str, body: str) -> dict:
     }
     r = requests.post(url, json=payload, headers=_headers(token), timeout=30)
     if r.status_code == 422:
-        raise RuntimeError(
-            f"Tag '{tag}' đã tồn tại trên repo '{repo}'.\n"
-            "  → Dùng tag khác hoặc xoá release cũ trên GitHub."
-        )
+        # Tag đã tồn tại → xóa và thử lại
+        print(f"   ⚠️  Tag '{tag}' đã tồn tại → đang xóa và tạo lại...")
+        _delete_release_by_tag(repo, token, tag)
+        r = requests.post(url, json=payload, headers=_headers(token), timeout=30)
     r.raise_for_status()
     return r.json()
 
