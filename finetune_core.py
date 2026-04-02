@@ -387,7 +387,7 @@ class FinetunePipeline:
             "--epoch",               str(last_epoch),
             "--avg",                 "1",
             "--exp-dir",             self.output_dir,
-            "--use-adapters",        "True",
+            "--use-adapters",        "False",
             "--adapter-dim",         str(self.adapter_dim),
             "--num-encoder-layers",  "2,2,3,4,3,2",
             "--downsampling-factor", "1,2,4,8,4,2",
